@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เว็บสุ่มคำถาม</title>
+    <style>
+        body {
+            font-family: 'Sarabun', 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 10px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+            
+            .container {
+                border-radius: 15px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            }
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2196F3, #21CBF3);
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+        }
+        
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.2em;
+            font-weight: bold;
+        }
+        
+        .header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                padding: 20px 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+                margin-bottom: 8px;
+            }
+            
+            .header p {
+                font-size: 1em;
+            }
+        }
+        
+        .main-content {
+            padding: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px 15px;
+            }
+        }
+        
+        .button-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .random-btn {
+            background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.3em;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 0 10px 10px 0;
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .random-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(255, 107, 107, 0.4);
+        }
+        
+        .random-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .restart-btn {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.3em;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 0 10px 10px 0;
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+            transition: all 0.3s ease;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .restart-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(76, 175, 80, 0.4);
+        }
+        
+        @media (max-width: 768px) {
+            .button-container {
+                margin-bottom: 15px;
+            }
+            
+            .random-btn, .restart-btn {
+                padding: 12px 30px;
+                font-size: 1.1em;
+                margin: 5px;
+                display: block;
+                width: calc(100% - 20px);
+                max-width: 300px;
+                margin: 5px auto;
+            }
+        }
+        
+        .progress-bar {
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 20px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(135deg, #4CAF50, #8BC34A);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .question-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            border-left: 5px solid #2196F3;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            display: none;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        .question-card.active {
+            display: block;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .question-number {
+            background: #2196F3;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        
+        .question-text {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        @media (max-width: 768px) {
+            .question-card {
+                padding: 20px 15px;
+                margin: 15px 0;
+                border-radius: 12px;
+            }
+            
+            .question-number {
+                padding: 6px 12px;
+                font-size: 0.85em;
+                margin-bottom: 12px;
+            }
+            
+            .question-text {
+                font-size: 1.1em;
+                margin-bottom: 15px;
+                line-height: 1.5;
+            }
+        }
+        
+        .answer-section {
+            margin-top: 20px;
+        }
+        
+        .answer-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+        
+        .answer-input:focus {
+            outline: none;
+            border-color: #2196F3;
+            box-shadow: 0 0 10px rgba(33, 150, 243, 0.2);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #9C27B0, #673AB7);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(156, 39, 176, 0.3);
+        }
+        
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .reveal-btn {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .reveal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        .clear-btn {
+            background: linear-gradient(135deg, #FF9800, #F57C00);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .clear-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .button-group {
+                gap: 8px;
+                justify-content: center;
+            }
+            
+            .submit-btn, .reveal-btn, .clear-btn {
+                padding: 10px 20px;
+                font-size: 0.9em;
+                flex: 1;
+                min-width: 100px;
+                text-align: center;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .submit-btn, .reveal-btn, .clear-btn {
+                flex: none;
+                width: 100%;
+                margin-bottom: 5px;
+            }
+        }
+        
+        .score-display {
+            background: linear-gradient(135deg, #E91E63, #FF5722);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            text-align: center;
+            display: none;
+            animation: bounceIn 0.6s ease-out;
+        }
+        
+        .score-display.show {
+            display: block;
+        }
+        
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .score-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .score-text {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .score-excellent { background: linear-gradient(135deg, #4CAF50, #8BC34A) !important; }
+        .score-good { background: linear-gradient(135deg, #2196F3, #03A9F4) !important; }
+        .score-fair { background: linear-gradient(135deg, #FF9800, #FFC107) !important; }
+        .score-poor { background: linear-gradient(135deg, #F44336, #E91E63) !important; }
+        
+        .answer-reveal {
+            background: #e8f5e8;
+            border: 2px solid #4CAF50;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .answer-reveal.show {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .answer-label {
+            font-weight: bold;
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+        
+        .answer-text {
+            color: #1b5e20;
+            font-size: 1.1em;
+            line-height: 1.5;
+        }
+        
+        .comparison-details {
+            background: #fff3e0;
+            border: 2px solid #FF9800;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .comparison-details.show {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .comparison-title {
+            font-weight: bold;
+            color: #E65100;
+            margin-bottom: 10px;
+        }
+        
+        .comparison-item {
+            margin: 8px 0;
+            color: #BF360C;
+        }
+        
+        .no-question {
+            text-align: center;
+            color: #666;
+            font-size: 1.2em;
+            padding: 40px 20px;
+        }
+        
+        .completed-message {
+            text-align: center;
+            background: linear-gradient(135deg, #4CAF50, #8BC34A);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            display: none;
+            animation: bounceIn 0.6s ease-out;
+        }
+        
+        .completed-message.show {
+            display: block;
+        }
+        
+        .completed-message h2 {
+            margin: 0 0 15px 0;
+            font-size: 2em;
+        }
+        
+        .completed-message p {
+            margin: 10px 0;
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .stats {
+            background: #f0f4f8;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .stats h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        
+        .stats p {
+            margin: 5px 0;
+            color: #666;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .stat-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2196F3;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .stat-item {
+                padding: 12px;
+                text-align: center;
+            }
+            
+            .stat-number {
+                font-size: 1.3em;
+            }
+            
+            .stat-label {
+                font-size: 0.8em;
+            }
+        }
+        
+        .remaining-info {
+            background: #e3f2fd;
+            border: 2px solid #2196F3;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        .remaining-info h4 {
+            margin: 0 0 10px 0;
+            color: #1976d2;
+        }
+        
+        .remaining-info p {
+            margin: 5px 0;
+            color: #1565c0;
+        }
+        
+        @media (max-width: 768px) {
+            .remaining-info {
+                padding: 12px;
+                margin: 10px 0;
+                border-radius: 8px;
+            }
+            
+            .remaining-info h4 {
+                font-size: 1em;
+                margin-bottom: 8px;
+            }
+            
+            .remaining-info p {
+                font-size: 0.9em;
+                margin: 3px 0;
+            }
+        }
+        
+        /* เพิ่ม responsive สำหรับ textarea */
+        .answer-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .answer-input:focus {
+            outline: none;
+            border-color: #2196F3;
+            box-shadow: 0 0 10px rgba(33, 150, 243, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .answer-input {
+                padding: 12px;
+                font-size: 1em;
+                margin-bottom: 12px;
+                min-height: 80px;
+                border-radius: 8px;
+            }
+        }
+        
+        /* เพิ่ม responsive สำหรับ progress bar */
+        .progress-bar {
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 20px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(135deg, #4CAF50, #8BC34A);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        @media (max-width: 768px) {
+            .progress-bar {
+                height: 16px;
+                margin: 10px 0;
+                border-radius: 8px;
+            }
+            
+            .progress-fill {
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎲 เว็บสุ่มคำถาม</h1>
+            <p>กดปุ่มสุ่มเพื่อรับคำถามแบบสุ่ม แล้วลองตอบดู!</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="button-container">
+                <button class="random-btn" id="randomBtn" onclick="getRandomQuestion()">🎯 สุ่มคำถาม</button>
+                <button class="restart-btn" id="restartBtn" onclick="restartQuiz()">🔄 เริ่มใหม่</button>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill">0/11</div>
+            </div>
+            
+            <div class="remaining-info" id="remainingInfo" style="display: none;">
+                <h4>📊 ความคืบหน้า</h4>
+                <p id="remainingText">เหลือคำถาม: 11 ข้อ</p>
+                <p id="completedText">ตอบแล้ว: 0 ข้อ</p>
+            </div>
+            
+            <div class="completed-message" id="completedMessage">
+                <h2>🎉 ยินดีด้วย!</h2>
+                <p>คุณได้ตอบคำถามครบทุกข้อแล้ว</p>
+                <p id="finalScore">คะแนนเฉลี่ย: 0%</p>
+                <p>กดปุ่ม "เริ่มใหม่" เพื่อทำแบบทดสอบอีกครั้ง</p>
+            </div>
+            
+            <div id="questionContainer">
+                <div class="no-question">
+                    คลิกปุ่ม "สุ่มคำถาม" เพื่อเริ่มต้น
+                </div>
+            </div>
+            
+            <div class="stats">
+                <h3>📊 สถิติ</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalQuestions">0</div>
+                        <div class="stat-label">คำถามที่สุ่ม</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="answersSubmitted">0</div>
+                        <div class="stat-label">คำตอบที่ส่ง</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="answersRevealed">0</div>
+                        <div class="stat-label">เฉลยที่เปิด</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="correctAnswers">0</div>
+                        <div class="stat-label">จำนวนข้อที่ถูก</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                id: 1,
+                text: "ระบบสารสนเทศเพื่อการบริหารมีความหมายอย่างไร",
+                answer: "การจัดการสารสนเทศและสนับสนุนการตัดสินใจของผู้บริหารให้มีประสิทธิผล"
+            },
+            {
+                id: 2,
+                text: "บทบาทการจัดการในองค์กรมีกระดับ อะไรบ้าง",
+                answer: "4 ระดับ คือ การวางแผน การจัดการ การเป็นผู้นำ การควบคุม"
+            },
+            {
+                id: 3,
+                text: "การปฏิบัติงานในระดับกลยุทธ์ ผู้จัดการจะต้องปฏิบัติอย่างไร",
+                answer: "ต้องกำหนดนโยบายและตัดสินใจสิ่งที่จะเกิดขึ้นในทิศทางขององค์กร"
+            },
+            {
+                id: 4,
+                text: "ระบบสนับสนุนการตัดสินใจ ช่วยแก้ปัญหาในส่วนใด",
+                answer: "แก้ปัญหาด้านความซับซ้อน"
+            },
+            {
+                id: 5,
+                text: "ระบบสารสนเทศเพื่อผู้บริหารแหล่งข้อมูลกี่ประเภท อะไรบ้าง",
+                answer: "2 ประเภท คือ แหล่งข้อมูลภายนอก และ แหล่งข้อมูลภายใน"
+            },
+            {
+                id: 6,
+                text: "ระบบประมวลผลรายการมีความหมายอย่างไร",
+                answer: "ประมวลผลข้อมูลดิบเพื่อให้เครื่องจักรสามารถอ่านได้"
+            },
+            {
+                id: 7,
+                text: "ระบบการประมวลผลแบบออนไลน์มีคำ นิยามออกเป็นกี่ประเภท อย่างไรบ้าง",
+                answer: "2 ประเภท คือ การประมวลผลรายการ และ การประมวลผลทันที"
+            },
+            {
+                id: 8,
+                text: "รูปภาพแสดงระดับการจัดการเป็นอย่างไร",
+                answer: "ระดับกลยุทธ์ ระดับยุทธวิธี ระดับปฏิบัติการ"
+            },
+            {
+                id: 9,
+                text: "รูปภาพแสดงแนวคิดของระบบประมวลผลรายการมีคำถามอะไรบ้าง",
+                answer: "ข้อมูลดิบ นำเข้าข้อมูล ประมวลผลข้อมูล แสดงข้อมูลที่ประมวลผลแล้ว"
+            },
+            {
+                id: 10,
+                text: "ระบบสารสนเทศเพื่อผู้บริหารมีประสิทธิภาพและความสามารถในการจัดเก็บข้อมูลด้วยเครื่องอะไร",
+                answer: "เครื่องเมนเฟรม"
+            },
+            {
+                id: 11,
+                text: "ความหมายและความแตกต่างของระดับการจัดการแต่ละระดับ",
+                answer: "ระดับกลยุทธ์ คือ ผู้บริหารระดับสูงใช้กำหนดนโยบายองค์กร ระดับยุทธวิธี คือ ผู้บริหารระดับกลางวางแผนสนับสนุนองค์กร ระดับประฏิบัติการ คือ ผู้บริหารระดับล่างใช้งานในชีวิตประจำวัน"
+            }
+        ];
+
+        let currentQuestion = null;
+        let availableQuestions = [...questions]; // คำถามที่ยังไม่ได้สุ่ม
+        let usedQuestions = []; // คำถามที่สุ่มแล้ว
+        let stats = {
+            totalQuestions: 0,
+            answersSubmitted: 0,
+            answersRevealed: 0,
+            scores: [],
+            correctAnswers: 0
+        };
+
+        function getRandomQuestion() {
+            if (availableQuestions.length === 0) {
+                // ถ้าไม่มีคำถามเหลือแล้ว แสดงข้อความเสร็จสิ้น
+                showCompletedMessage();
+                return;
+            }
+            
+            const randomIndex = Math.floor(Math.random() * availableQuestions.length);
+            currentQuestion = availableQuestions[randomIndex];
+            
+            // ย้ายคำถามจาก availableQuestions ไป usedQuestions
+            usedQuestions.push(currentQuestion);
+            availableQuestions.splice(randomIndex, 1);
+            
+            stats.totalQuestions++;
+            updateStats();
+            updateProgress();
+            
+            displayQuestion(currentQuestion);
+            
+            // ซ่อนข้อความเสร็จสิ้น
+            document.getElementById('completedMessage').classList.remove('show');
+            
+            // ถ้าไม่มีคำถามเหลือแล้ว ปิดปุ่มสุ่ม
+            if (availableQuestions.length === 0) {
+                document.getElementById('randomBtn').disabled = true;
+                document.getElementById('randomBtn').textContent = '🏁 หมดคำถามแล้ว';
+            }
+        }
+
+        function updateProgress() {
+            const totalQuestions = questions.length;
+            const completed = usedQuestions.length;
+            const remaining = availableQuestions.length;
+            const percentage = (completed / totalQuestions) * 100;
+            
+            const progressFill = document.getElementById('progressFill');
+            progressFill.style.width = percentage + '%';
+            progressFill.textContent = `${completed}/${totalQuestions}`;
+            
+            const remainingInfo = document.getElementById('remainingInfo');
+            if (completed > 0) {
+                remainingInfo.style.display = 'block';
+                document.getElementById('remainingText').textContent = `เหลือคำถาม: ${remaining} ข้อ`;
+                document.getElementById('completedText').textContent = `ตอบแล้ว: ${completed} ข้อ`;
+            }
+        }
+
+        function showCompletedMessage() {
+            const completedMessage = document.getElementById('completedMessage');
+            const averageScore = stats.scores.length > 0 ? 
+                Math.round(stats.scores.reduce((a, b) => a + b, 0) / stats.scores.length) : 0;
+            
+            document.getElementById('finalScore').textContent = `คะแนนเฉลี่ย: ${averageScore}%`;
+            completedMessage.classList.add('show');
+            
+            // แสดงปุ่มเริ่มใหม่
+            document.getElementById('restartBtn').style.display = 'inline-block';
+        }
+
+        function restartQuiz() {
+            // รีเซ็ตคำถาม
+            availableQuestions = [...questions];
+            usedQuestions = [];
+            currentQuestion = null;
+            
+            // รีเซ็ตสถิติ
+            stats = {
+                totalQuestions: 0,
+                answersSubmitted: 0,
+                answersRevealed: 0,
+                scores: [],
+                correctAnswers: 0
+            };
+            
+            // รีเซ็ต UI
+            document.getElementById('randomBtn').disabled = false;
+            document.getElementById('randomBtn').textContent = '🎯 สุ่มคำถาม';
+            document.getElementById('restartBtn').style.display = 'none';
+            document.getElementById('completedMessage').classList.remove('show');
+            document.getElementById('remainingInfo').style.display = 'none';
+            
+            // รีเซ็ต progress bar
+            const progressFill = document.getElementById('progressFill');
+            progressFill.style.width = '0%';
+            progressFill.textContent = '0/11';
+            
+            // รีเซ็ตคำถาม container
+            document.getElementById('questionContainer').innerHTML = `
+                <div class="no-question">
+                    คลิกปุ่ม "สุ่มคำถาม" เพื่อเริ่มต้น
+                </div>
+            `;
+            
+            updateStats();
+        }
+
+        function displayQuestion(question) {
+            const container = document.getElementById('questionContainer');
+            
+            container.innerHTML = `
+                <div class="question-card active">
+                    <div class="question-number">คำถามข้อที่ ${question.id}</div>
+                    <div class="question-text">${question.text}</div>
+                    
+                    <div class="answer-section">
+                        <textarea class="answer-input" id="userAnswer" placeholder="พิมพ์คำตอบของคุณที่นี่..." rows="4"></textarea>
+                        
+                        <div class="button-group">
+                            <button class="submit-btn" onclick="submitAnswer()" id="submitBtn">📝 ส่งคำตอบ</button>
+                            <button class="reveal-btn" onclick="revealAnswer()">🔍 เปิดเฉลย</button>
+                            <button class="clear-btn" onclick="clearAnswer()">🗑️ ล้างคำตอบ</button>
+                        </div>
+                        
+                        <div class="score-display" id="scoreDisplay">
+                            <div class="score-number" id="scoreNumber">0%</div>
+                            <div class="score-text" id="scoreText">คะแนนของคุณ</div>
+                        </div>
+                        
+                        <div class="comparison-details" id="comparisonDetails">
+                            <div class="comparison-title">📋 รายละเอียดการเปรียบเทียบ:</div>
+                            <div id="comparisonContent"></div>
+                        </div>
+                        
+                        <div class="answer-reveal" id="answerReveal">
+                            <div class="answer-label">💡 เฉลย:</div>
+                            <div class="answer-text">${question.answer}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // พจนานุกรมคำที่มีความหมายเหมือนกัน
+        const synonyms = {
+            'เพื่อ': ['ให้', 'เพื่อให้', 'สำหรับ'],
+            'ให้': ['เพื่อ', 'เพื่อให้', 'สำหรับ'],
+            'และ': ['กับ', 'รวมทั้ง', 'ตลอดจน'],
+            'กับ': ['และ', 'รวมทั้ง', 'ตลอดจน'],
+            'การ': ['กาน'],
+            'ใน': ['ภายใน', 'ข้างใน'],
+            'ของ': ['ซึ่ง', 'ที่'],
+            'มี': ['คือ', 'เป็น'],
+            'ได้': ['สามารถ', 'อาจ'],
+            'จะ': ['ควร', 'ต้อง'],
+            'อย่าง': ['แบบ', 'ประเภท'],
+            'ระบบ': ['ระบบการ', 'ระบบงาน'],
+            'ข้อมูล': ['ข้อมูลต่างๆ', 'ข้อมูลที่', 'สารสนเทศ'],
+            'ผู้บริหาร': ['ผู้จัดการ', 'ผู้บริหารงาน', 'ผู้นำ'],
+            'ประสิทธิภาพ': ['ประสิทธิผล', 'ความสามารถ'],
+            'ประสิทธิผล': ['ประสิทธิภาพ', 'ความสามารถ'],
+            'จัดการ': ['บริหาร', 'บริหารจัดการ'],
+            'บริหาร': ['จัดการ', 'บริหารจัดการ'],
+            'ตัดสินใจ': ['การตัดสินใจ', 'การตั้งใจ'],
+            'สนับสนุน': ['ช่วย', 'ช่วยเหลือ', 'ส่งเสริม']
+        };
+
+        function normalizeText(text) {
+            return text.toLowerCase()
+                      .replace(/\s+/g, ' ')
+                      .trim()
+                      .replace(/[^\u0E00-\u0E7Fa-zA-Z0-9\s]/g, '');
+        }
+
+        function findSynonyms(word) {
+            const normalized = normalizeText(word);
+            if (synonyms[normalized]) {
+                return [normalized, ...synonyms[normalized]];
+            }
+            return [normalized];
+        }
+
+        function calculateSimilarity(userAnswer, correctAnswer) {
+            const user = normalizeText(userAnswer);
+            const correct = normalizeText(correctAnswer);
+            
+            if (user === correct) return { score: 100, details: [] };
+            
+            const userWords = user.split(' ').filter(w => w.length > 0);
+            const correctWords = correct.split(' ').filter(w => w.length > 0);
+            
+            let matchedWords = 0;
+            let synonymMatches = 0;
+            let partialMatches = 0;
+            let details = [];
+            let usedUserWords = new Set();
+            
+            // ตรวจสอบคำสำคัญแต่ละคำในเฉลย
+            correctWords.forEach(correctWord => {
+                let found = false;
+                
+                // 1. ตรวจสอบการตรงกันแน่นอน
+                for (let i = 0; i < userWords.length; i++) {
+                    if (!usedUserWords.has(i) && userWords[i] === correctWord) {
+                        matchedWords++;
+                        usedUserWords.add(i);
+                        details.push(`✅ "${correctWord}" - ตรงกันเป็นเปอร์เซ็นต์`);
+                        found = true;
+                        break;
+                    }
+                }
+                
+                if (found) return;
+                
+                // 2. ตรวจสอบคำพ้องความหมาย
+                const correctSynonyms = findSynonyms(correctWord);
+                for (let i = 0; i < userWords.length; i++) {
+                    if (!usedUserWords.has(i)) {
+                        const userSynonyms = findSynonyms(userWords[i]);
+                        const isSynonym = correctSynonyms.some(cs => userSynonyms.includes(cs)) ||
+                                        userSynonyms.some(us => correctSynonyms.includes(us));
+                        
+                        if (isSynonym) {
+                            synonymMatches++;
+                            usedUserWords.add(i);
+                            details.push(`🟢 "${correctWord}" - ความหมายเหมือนกัน (พบ: "${userWords[i]}")`);
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                
+                if (found) return;
+                
+                // 3. ตรวจสอบการใกล้เคียงด้วยตัวอักษร
+                for (let i = 0; i < userWords.length; i++) {
+                    if (!usedUserWords.has(i)) {
+                        const userWord = userWords[i];
+                        const isPartial = userWord.includes(correctWord) || 
+                                        correctWord.includes(userWord) ||
+                                        levenshteinDistance(userWord, correctWord) <= Math.min(userWord.length, correctWord.length) * 0.3;
+                        
+                        if (isPartial) {
+                            partialMatches++;
+                            usedUserWords.add(i);
+                            details.push(`🟡 "${correctWord}" - ใกล้เคียงบางส่วน (พบ: "${userWord}")`);
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                
+                if (!found) {
+                    details.push(`❌ "${correctWord}" - ไม่พบในคำตอบ`);
+                }
+            });
+            
+            // คำนวณคะแนน
+            const exactScore = (matchedWords / correctWords.length) * 100;
+            const synonymScore = (synonymMatches / correctWords.length) * 90; // คำพ้องความหมายได้ 90%
+            const partialScore = (partialMatches / correctWords.length) * 30; // ใกล้เคียงได้ 30%
+            let totalScore = Math.min(100, Math.round(exactScore + synonymScore + partialScore));
+            
+            // โบนัสสำหรับการมีเนื้อหาครบถ้วน
+            const contentCoverage = (matchedWords + synonymMatches + partialMatches) / correctWords.length;
+            if (contentCoverage >= 0.8) { // ถ้าครอบคลุม 80% ขึ้นไป
+                totalScore = Math.min(100, totalScore + 10); // โบนัส 10 คะแนน
+                details.unshift(`🎉 โบนัส: มีเนื้อหาครบถ้วน (+10 คะแนน)`);
+            }
+            
+            return { score: totalScore, details };
+        }
+
+        function levenshteinDistance(str1, str2) {
+            const matrix = [];
+            
+            for (let i = 0; i <= str2.length; i++) {
+                matrix[i] = [i];
+            }
+            
+            for (let j = 0; j <= str1.length; j++) {
+                matrix[0][j] = j;
+            }
+            
+            for (let i = 1; i <= str2.length; i++) {
+                for (let j = 1; j <= str1.length; j++) {
+                    if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+                        matrix[i][j] = matrix[i - 1][j - 1];
+                    } else {
+                        matrix[i][j] = Math.min(
+                            matrix[i - 1][j - 1] + 1,
+                            matrix[i][j - 1] + 1,
+                            matrix[i - 1][j] + 1
+                        );
+                    }
+                }
+            }
+            
+            return matrix[str2.length][str1.length];
+        }
+
+        function submitAnswer() {
+            const userAnswer = document.getElementById('userAnswer').value.trim();
+            
+            if (userAnswer === '') {
+                alert('กรุณาพิมพ์คำตอบก่อนส่ง');
+                return;
+            }
+            
+            const result = calculateSimilarity(userAnswer, currentQuestion.answer);
+            stats.answersSubmitted++;
+            stats.scores.push(result.score);
+            
+            // นับข้อที่ถูก (คะแนน 70% ขึ้นไป)
+            if (result.score >= 70) {
+                stats.correctAnswers++;
+            }
+            
+            displayScore(result.score, result.details);
+            
+            // ปิดใช้งานปุ่มส่งคำตอบ
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').textContent = '✅ ส่งแล้ว';
+            
+            updateStats();
+        }
+
+        function displayScore(score, details) {
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            const scoreNumber = document.getElementById('scoreNumber');
+            const scoreText = document.getElementById('scoreText');
+            const comparisonDetails = document.getElementById('comparisonDetails');
+            const comparisonContent = document.getElementById('comparisonContent');
+            
+            scoreNumber.textContent = score + '%';
+            
+            // กำหนดสีและข้อความตามคะแนน
+            scoreDisplay.className = 'score-display show';
+            if (score >= 90) {
+                scoreDisplay.classList.add('score-excellent');
+                scoreText.textContent = 'ยอดเยี่ยม! 🌟';
+            } else if (score >= 70) {
+                scoreDisplay.classList.add('score-good');
+                scoreText.textContent = 'ดีมาก! 👍';
+            } else if (score >= 50) {
+                scoreDisplay.classList.add('score-fair');
+                scoreText.textContent = 'พอใช้ 👌';
+            } else {
+                scoreDisplay.classList.add('score-poor');
+                scoreText.textContent = 'ควรปรับปรุง 📚';
+            }
+            
+            // แสดงรายละเอียดการเปรียบเทียบ
+            comparisonContent.innerHTML = details.map(detail => 
+                `<div class="comparison-item">${detail}</div>`
+            ).join('');
+            comparisonDetails.classList.add('show');
+        }
+
+        function revealAnswer() {
+            const answerReveal = document.getElementById('answerReveal');
+            if (!answerReveal.classList.contains('show')) {
+                answerReveal.classList.add('show');
+                stats.answersRevealed++;
+                updateStats();
+            }
+        }
+
+        function clearAnswer() {
+            document.getElementById('userAnswer').value = '';
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('submitBtn').textContent = '📝 ส่งคำตอบ';
+            
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            const comparisonDetails = document.getElementById('comparisonDetails');
+            const answerReveal = document.getElementById('answerReveal');
+            
+            scoreDisplay.classList.remove('show');
+            comparisonDetails.classList.remove('show');
+            answerReveal.classList.remove('show');
+        }
+
+        function updateStats() {
+            document.getElementById('totalQuestions').textContent = stats.totalQuestions;
+            document.getElementById('answersSubmitted').textContent = stats.answersSubmitted;
+            document.getElementById('answersRevealed').textContent = stats.answersRevealed;
+            document.getElementById('correctAnswers').textContent = stats.correctAnswers;
+        }
+
+        // เพิ่ม keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                submitAnswer();
+            } else if (e.key === 'F1') {
+                e.preventDefault();
+                revealAnswer();
+            } else if (e.key === 'F5') {
+                e.preventDefault();
+                getRandomQuestion();
+            }
+        });
+
+        // เริ่มต้นโดยแสดง progress bar
+        updateProgress();
+    </script>
+</body>
+</html>
