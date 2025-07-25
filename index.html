@@ -233,6 +233,125 @@
             margin-top: 20px;
         }
         
+        .input-container {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        
+        .answer-input {
+            width: 100%;
+            padding: 15px 60px 15px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1.1em;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .answer-input:focus {
+            outline: none;
+            border-color: #2196F3;
+            box-shadow: 0 0 10px rgba(33, 150, 243, 0.2);
+        }
+        
+        .mic-button {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            background: linear-gradient(135deg, #FF4444, #FF6B6B);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(255, 68, 68, 0.3);
+        }
+        
+        .mic-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(255, 68, 68, 0.4);
+        }
+        
+        .mic-button.recording {
+            background: linear-gradient(135deg, #4CAF50, #66BB6A);
+            animation: pulse 1.5s infinite;
+        }
+        
+        .mic-button.processing {
+            background: linear-gradient(135deg, #FF9800, #FFB74D);
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .voice-status {
+            background: #e3f2fd;
+            border: 2px solid #2196F3;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 10px 0;
+            text-align: center;
+            font-size: 0.9em;
+            color: #1976d2;
+            display: none;
+        }
+        
+        .voice-status.show {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .voice-status.error {
+            background: #ffebee;
+            border-color: #f44336;
+            color: #c62828;
+        }
+        
+        .voice-status.success {
+            background: #e8f5e8;
+            border-color: #4caf50;
+            color: #2e7d32;
+        }
+        
+        @media (max-width: 768px) {
+            .answer-input {
+                padding: 12px 55px 12px 12px;
+                font-size: 1em;
+                min-height: 80px;
+                border-radius: 8px;
+            }
+            
+            .mic-button {
+                width: 35px;
+                height: 35px;
+                right: 8px;
+                top: 8px;
+                font-size: 1em;
+            }
+            
+            .voice-status {
+                font-size: 0.85em;
+                padding: 8px;
+            }
+        }
+        
         .answer-input {
             width: 100%;
             padding: 15px;
@@ -568,35 +687,7 @@
             }
         }
         
-        /* เพิ่ม responsive สำหรับ textarea */
-        .answer-input {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 1.1em;
-            margin-bottom: 15px;
-            transition: border-color 0.3s ease;
-            box-sizing: border-box;
-            resize: vertical;
-            min-height: 100px;
-        }
-        
-        .answer-input:focus {
-            outline: none;
-            border-color: #2196F3;
-            box-shadow: 0 0 10px rgba(33, 150, 243, 0.2);
-        }
-        
-        @media (max-width: 768px) {
-            .answer-input {
-                padding: 12px;
-                font-size: 1em;
-                margin-bottom: 12px;
-                min-height: 80px;
-                border-radius: 8px;
-            }
-        }
+        /* ลบ styles เก่าที่ซ้ำกัน */
         
         /* เพิ่ม responsive สำหรับ progress bar */
         .progress-bar {
@@ -702,7 +793,7 @@
             },
             {
                 id: 2,
-                text: "บทบาทการจัดการในองค์กรมีกระดับ อะไรบ้าง",
+                text: "บทบาทการจัดการในองค์กรมีกี่ระดับ อะไรบ้าง",
                 answer: "4 ระดับ คือ การวางแผน การจัดการ การเป็นผู้นำ การควบคุม"
             },
             {
@@ -717,7 +808,7 @@
             },
             {
                 id: 5,
-                text: "ระบบสารสนเทศเพื่อผู้บริหารแหล่งข้อมูลกี่ประเภท อะไรบ้าง",
+                text: "ระบบสารสนเทศเพื่อผู้บริหารแหล่งข้อมูลที่ประเภท อะไรบ้าง",
                 answer: "2 ประเภท คือ แหล่งข้อมูลภายนอก และ แหล่งข้อมูลภายใน"
             },
             {
@@ -869,7 +960,12 @@
                     <div class="question-text">${question.text}</div>
                     
                     <div class="answer-section">
-                        <textarea class="answer-input" id="userAnswer" placeholder="พิมพ์คำตอบของคุณที่นี่..." rows="4"></textarea>
+                        <div class="input-container">
+                            <textarea class="answer-input" id="userAnswer" placeholder="พิมพ์คำตอบของคุณที่นี่... หรือกดไมค์เพื่อพูด" rows="4"></textarea>
+                            <button class="mic-button" id="micButton" onclick="toggleVoiceInput()" title="กดเพื่อพูดคำตอบ">🎤</button>
+                        </div>
+                        
+                        <div class="voice-status" id="voiceStatus"></div>
                         
                         <div class="button-group">
                             <button class="submit-btn" onclick="submitAnswer()" id="submitBtn">📝 ส่งคำตอบ</button>
@@ -1142,6 +1238,146 @@
             document.getElementById('correctAnswers').textContent = stats.correctAnswers;
         }
 
+        // Voice Recognition Variables
+        let recognition = null;
+        let isListening = false;
+        
+        // Initialize Speech Recognition
+        function initSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                
+                recognition.lang = 'th-TH'; // Thai language
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.maxAlternatives = 1;
+                
+                recognition.onstart = function() {
+                    isListening = true;
+                    updateMicButton();
+                    showVoiceStatus('🎤 กำลังฟัง... พูดคำตอบของคุณ', 'show');
+                };
+                
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    const confidence = event.results[0][0].confidence;
+                    
+                    document.getElementById('userAnswer').value = transcript;
+                    showVoiceStatus(`✅ รับคำตอบแล้ว: "${transcript}" (ความแม่นยำ: ${Math.round(confidence * 100)}%)`, 'success');
+                    
+                    setTimeout(() => {
+                        hideVoiceStatus();
+                    }, 3000);
+                };
+                
+                recognition.onerror = function(event) {
+                    let errorMessage = '❌ เกิดข้อผิดพลาด: ';
+                    switch(event.error) {
+                        case 'no-speech':
+                            errorMessage += 'ไม่ได้ยินเสียงพูด กรุณาลองใหม่';
+                            break;
+                        case 'audio-capture':
+                            errorMessage += 'ไม่สามารถเข้าถึงไมโครโฟนได้';
+                            break;
+                        case 'not-allowed':
+                            errorMessage += 'ไม่ได้รับอนุญาตให้ใช้ไมโครโฟน';
+                            break;
+                        case 'network':
+                            errorMessage += 'ปัญหาการเชื่อมต่อเครือข่าย';
+                            break;
+                        default:
+                            errorMessage += event.error;
+                    }
+                    showVoiceStatus(errorMessage, 'error');
+                    
+                    setTimeout(() => {
+                        hideVoiceStatus();
+                    }, 4000);
+                };
+                
+                recognition.onend = function() {
+                    isListening = false;
+                    updateMicButton();
+                };
+                
+                return true;
+            }
+            return false;
+        }
+        
+        function toggleVoiceInput() {
+            if (!recognition) {
+                if (!initSpeechRecognition()) {
+                    showVoiceStatus('❌ เบราว์เซอร์นี้ไม่รองรับการรู้จำเสียง', 'error');
+                    setTimeout(() => {
+                        hideVoiceStatus();
+                    }, 3000);
+                    return;
+                }
+            }
+            
+            if (isListening) {
+                recognition.stop();
+                showVoiceStatus('⏹️ หยุดการฟังแล้ว', 'show');
+                setTimeout(() => {
+                    hideVoiceStatus();
+                }, 2000);
+            } else {
+                try {
+                    recognition.start();
+                    updateMicButton();
+                } catch (error) {
+                    showVoiceStatus('❌ ไม่สามารถเริ่มการฟังได้ กรุณาลองใหม่', 'error');
+                    setTimeout(() => {
+                        hideVoiceStatus();
+                    }, 3000);
+                }
+            }
+        }
+        
+        function updateMicButton() {
+            const micButton = document.getElementById('micButton');
+            if (isListening) {
+                micButton.classList.add('recording');
+                micButton.innerHTML = '⏹️';
+                micButton.title = 'กดเพื่อหยุดการฟัง';
+            } else {
+                micButton.classList.remove('recording', 'processing');
+                micButton.innerHTML = '🎤';
+                micButton.title = 'กดเพื่อพูดคำตอบ';
+            }
+        }
+        
+        function showVoiceStatus(message, type = 'show') {
+            const voiceStatus = document.getElementById('voiceStatus');
+            voiceStatus.textContent = message;
+            voiceStatus.className = `voice-status ${type}`;
+        }
+        
+        function hideVoiceStatus() {
+            const voiceStatus = document.getElementById('voiceStatus');
+            voiceStatus.classList.remove('show', 'error', 'success');
+        }
+        
+        // Initialize speech recognition when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if browser supports speech recognition
+            if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+                // Hide mic button if not supported
+                setTimeout(() => {
+                    const micButton = document.getElementById('micButton');
+                    if (micButton) {
+                        micButton.style.display = 'none';
+                        const answerInput = document.getElementById('userAnswer');
+                        if (answerInput) {
+                            answerInput.style.paddingRight = '15px';
+                        }
+                    }
+                }, 100);
+            }
+        });
+
         // เพิ่ม keyboard shortcuts
         document.addEventListener('keydown', function(e) {
             if (e.ctrlKey && e.key === 'Enter') {
@@ -1152,6 +1388,9 @@
             } else if (e.key === 'F5') {
                 e.preventDefault();
                 getRandomQuestion();
+            } else if (e.key === 'F2') {
+                e.preventDefault();
+                toggleVoiceInput();
             }
         });
 
